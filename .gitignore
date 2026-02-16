@@ -1,0 +1,10 @@
+# IntelliJ / JetBrains
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# Homebrew artifacts
+*.tar.gz
+*.zip
