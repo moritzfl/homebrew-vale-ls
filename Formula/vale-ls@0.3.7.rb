@@ -1,4 +1,4 @@
-class ValeLsAT0_3_7 < Formula
+class ValeLsAT037 < Formula
   desc "Language Server Protocol implementation for Vale"
   homepage "https://github.com/errata-ai/vale-ls"
   version "0.3.7"

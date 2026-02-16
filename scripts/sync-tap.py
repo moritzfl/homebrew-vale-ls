@@ -277,7 +277,7 @@ def main() -> None:
     write_file(latest_path, latest_formula, args.dry_run)
 
     for (major, minor), release in sorted(selected_by_minor.items()):
-        class_name = f"ValeLsAT{major}_{minor}"
+        class_name = f"ValeLsAT{major}{minor}"
         formula_name = f"{FORMULA_NAME}@{major}.{minor}.rb"
         livecheck_block = LIVE_CHECK_MINOR_BLOCK.format(
             repo=args.repo, major=major, minor=minor
@@ -297,7 +297,7 @@ def main() -> None:
 
     for release in selected:
         major, minor, patch = release.version
-        class_name = f"ValeLsAT{major}_{minor}_{patch}"
+        class_name = f"ValeLsAT{major}{minor}{patch}"
         formula_name = f"{FORMULA_NAME}@{major}.{minor}.{patch}.rb"
         content = build_formula(
             template=template,
