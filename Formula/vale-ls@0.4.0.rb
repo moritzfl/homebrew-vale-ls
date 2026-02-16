@@ -1,14 +1,9 @@
-class ValeLsAT0_4 < Formula
+class ValeLsAT0_4_0 < Formula
   desc "Language Server Protocol implementation for Vale"
   homepage "https://github.com/errata-ai/vale-ls"
   version "0.4.0"
   license "MIT"
 
-  livecheck do
-    url "https://github.com/errata-ai/vale-ls/releases"
-    strategy :github_releases
-    regex(/^v?0\.4\.\d+$/i)
-  end
   keg_only :versioned_formula
 
   on_macos do

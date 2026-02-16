@@ -19,3 +19,9 @@ brew install vale-ls
 ```sh
 brew install vale-ls@0.4
 ```
+
+## Sync formulae with GitHub releases
+
+```sh
+scripts/sync-tap.py
+```

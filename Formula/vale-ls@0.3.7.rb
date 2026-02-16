@@ -1,33 +1,28 @@
-class ValeLsAT0_4 < Formula
+class ValeLsAT0_3_7 < Formula
   desc "Language Server Protocol implementation for Vale"
   homepage "https://github.com/errata-ai/vale-ls"
-  version "0.4.0"
+  version "0.3.7"
   license "MIT"
 
-  livecheck do
-    url "https://github.com/errata-ai/vale-ls/releases"
-    strategy :github_releases
-    regex(/^v?0\.4\.\d+$/i)
-  end
   keg_only :versioned_formula
 
   on_macos do
     if Hardware::CPU.arm?
       url "https://github.com/errata-ai/vale-ls/releases/download/v#{version}/vale-ls-aarch64-apple-darwin.zip"
-      sha256 "5f1fb6237eae2db5dea69a1c95867a4eb3e14b42c08e5365db1d1bfad8d44565"
+      sha256 "7256a8729be663dfa78c9a26b34fcf026bf4fd3771334b5fc88738476d873d5e"
     else
       url "https://github.com/errata-ai/vale-ls/releases/download/v#{version}/vale-ls-x86_64-apple-darwin.zip"
-      sha256 "fe915f2efc5d9be7822e1dedabd2a368ae3eaab39d36aa7c292fc7ee9bb93fee"
+      sha256 "2d8d89cd637306e9dadf389f7bd4a5ba2f4b6c97402a4b7c1bcefadfab826a5c"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
       url "https://github.com/errata-ai/vale-ls/releases/download/v#{version}/vale-ls-aarch64-unknown-linux-gnu.zip"
-      sha256 "7ac28161d884ec994d4efa8d79f6a1e9d46453f1f6f366b96f5033be793759bd"
+      sha256 "2ed2f0ce33d4b8591c81c4c748a3c7993c079079782f9a12bc6479601ba14531"
     else
       url "https://github.com/errata-ai/vale-ls/releases/download/v#{version}/vale-ls-x86_64-unknown-linux-gnu.zip"
-      sha256 "5377a43ab11ef5371fe460e9ff3a5ede826524848c9d73284294451c00bdd3b1"
+      sha256 "bf09676f90cbe1ef5d51265ccc98ded04f36e983d219bd09e78b81c46663cf42"
     end
   end
 
