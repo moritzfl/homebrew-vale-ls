@@ -1,0 +1,85 @@
+name: Test Homebrew Formulae
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+  ALLOWED_FAILURES: ${{ vars.ALLOWED_FAILURES || '' }}
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Homebrew (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl file git
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo "/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_PATH"
+          echo "/home/linuxbrew/.linuxbrew/sbin" >> "$GITHUB_PATH"
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew --version
+
+      - name: Tap local repo
+        run: |
+          brew tap moritzfl/vale-ls "${GITHUB_WORKSPACE}"
+
+      - name: Collect formulae
+        id: formulae
+        run: |
+          python3 - <<'PY'
+          import glob
+          import os
+
+          names = []
+          for path in sorted(glob.glob("Formula/*.rb")):
+              name = os.path.splitext(os.path.basename(path))[0]
+              names.append(name)
+
+          output = os.environ["GITHUB_OUTPUT"]
+          with open(output, "a", encoding="utf-8") as handle:
+              handle.write("formulae=" + " ".join(names) + "\n")
+          PY
+
+      - name: Install and test each formula
+        run: |
+          set -euo pipefail
+          allowed_failures=" ${ALLOWED_FAILURES} "
+          failures=()
+          allowed=()
+          for formula in ${{ steps.formulae.outputs.formulae }}; do
+            echo "::group::${formula}"
+            brew install "${formula}"
+            if brew test "${formula}"; then
+              echo "::endgroup::"
+              continue
+            fi
+            echo "::endgroup::"
+            if [[ "${allowed_failures}" == *" ${formula} "* ]]; then
+              echo "::warning::${formula} failed but is allowed"
+              allowed+=("${formula}")
+            else
+              echo "::error::${formula} failed"
+              failures+=("${formula}")
+            fi
+          done
+          if [ "${#allowed[@]}" -gt 0 ]; then
+            echo "Allowed failures: ${allowed[*]}"
+          fi
+          if [ "${#failures[@]}" -gt 0 ]; then
+            echo "Failed: ${failures[*]}"
+            exit 1
+          fi
