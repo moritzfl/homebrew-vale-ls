@@ -6,6 +6,7 @@ This tap provides Homebrew formulae for installing `vale-ls`.
 
 ```sh
 brew tap moritzfl/vale-ls
+brew trust moritzfl/vale-ls
 ```
 
 ## Install vale-ls

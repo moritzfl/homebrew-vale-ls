@@ -36,6 +36,7 @@ jobs:
       - name: Tap local repo
         run: |
           brew tap moritzfl/vale-ls "${GITHUB_WORKSPACE}"
+          brew trust moritzfl/vale-ls
 
       - name: Collect formulae
         id: formulae
