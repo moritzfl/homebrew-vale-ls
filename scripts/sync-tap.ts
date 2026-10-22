@@ -57,7 +57,14 @@ interface Release {
   version: Version;
   tag: string;
   assets: Record<Target, string>;
-  sha256: Partial<Record<Target, string>>;
+  sha256?: Record<Target, string>;
+}
+
+function hashes(release: Release): Record<Target, string> {
+  if (!release.sha256) {
+    throw new Error(`Missing sha256 for ${release.tag}`);
+  }
+  return release.sha256;
 }
 
 interface PlannedFormula {
@@ -161,7 +168,7 @@ function parseRelease(raw: Record<string, unknown>, includePrereleases: boolean)
     return null;
   }
 
-  return { version, tag, assets, sha256: {} };
+  return { version, tag, assets };
 }
 
 async function sha256OfUrl(url: string): Promise<string> {
@@ -203,7 +210,11 @@ async function cachedSha256(path: string, version: Version): Promise<Record<Targ
     if (!match) {
       return null;
     }
-    sha256[target] = match[1];
+    const sha = match[1];
+    if (!sha) {
+      return null;
+    }
+    sha256[target] = sha;
   }
   return sha256;
 }
@@ -217,10 +228,12 @@ async function fillSha256(release: Release): Promise<Record<Target, string>> {
   }
 
   console.error(`Computing sha256 for ${release.tag}`);
+  const sha256 = {} as Record<Target, string>;
   for (const target of TARGETS) {
-    release.sha256[target] = await sha256OfUrl(release.assets[target]);
+    sha256[target] = await sha256OfUrl(release.assets[target]);
   }
-  return release.sha256 as Record<Target, string>;
+  release.sha256 = sha256;
+  return sha256;
 }
 
 const liveCheckMinorBlock = (repo: string, major: number, minor: number) => `  livecheck do
@@ -270,7 +283,10 @@ async function planFormulae(
   }
 
   const selected = [...byVersion.values()].sort((a, b) => compareVersions(a.version, b.version));
-  const latest = selected[selected.length - 1];
+  const latest = selected.at(-1);
+  if (!latest) {
+    throw new Error("No valid releases found.");
+  }
 
   const byMinor = new Map<string, Release>();
   for (const release of selected) {
@@ -298,7 +314,7 @@ async function planFormulae(
     content: buildFormula(template, opts.repo, {
       className: "ValeLs",
       version: latest.version,
-      sha256: latest.sha256 as Record<Target, string>,
+      sha256: hashes(latest),
       livecheck: LIVE_CHECK_BLOCK,
       kegOnly: false,
     }),
@@ -312,7 +328,7 @@ async function planFormulae(
       content: buildFormula(template, opts.repo, {
         className: `ValeLsAT${major}${minor}`,
         version: release.version,
-        sha256: release.sha256 as Record<Target, string>,
+        sha256: hashes(release),
         livecheck: liveCheckMinorBlock(opts.repo, major, minor),
         kegOnly: true,
       }),
@@ -327,7 +343,7 @@ async function planFormulae(
       content: buildFormula(template, opts.repo, {
         className: `ValeLsAT${major}${minor}${patch}`,
         version: release.version,
-        sha256: release.sha256 as Record<Target, string>,
+        sha256: hashes(release),
         livecheck: "",
         kegOnly: true,
       }),
