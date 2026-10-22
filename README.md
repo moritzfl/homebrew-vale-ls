@@ -24,5 +24,8 @@ brew install vale-ls@0.4
 ## Sync formulae with GitHub releases
 
 ```sh
-scripts/sync-tap.py
+bun scripts/sync-tap.ts --prune
 ```
+
+Requires [Bun](https://bun.sh).
+
