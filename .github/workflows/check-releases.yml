@@ -22,4 +22,6 @@ jobs:
           bun-version: latest
 
       - name: Verify every vale-ls release has a formula
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: bun scripts/sync-tap.ts --check

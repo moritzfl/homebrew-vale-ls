@@ -103,9 +103,18 @@ function parseOptions(): Options | null {
   };
 }
 
+function githubHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { Accept: "application/vnd.github+json" };
+  const token = process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 async function fetchJson(url: string): Promise<unknown> {
   const response = await fetch(url, {
-    headers: { Accept: "application/vnd.github+json" },
+    headers: githubHeaders(),
     redirect: "follow",
   });
   if (!response.ok) {
