@@ -29,3 +29,11 @@ bun scripts/sync-tap.ts --prune
 
 Requires [Bun](https://bun.sh).
 
+## Check coverage of published releases
+
+```sh
+bun scripts/sync-tap.ts --check
+```
+
+Exits non-zero when a release is missing a formula or an existing formula is out
+of date. CI runs this check weekly.
