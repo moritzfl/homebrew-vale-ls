@@ -8,3 +8,6 @@
 # Homebrew artifacts
 *.tar.gz
 *.zip
+
+# Bun
+node_modules/

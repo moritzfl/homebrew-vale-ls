@@ -1,0 +1,14 @@
+{
+  "name": "homebrew-vale-ls",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "bun scripts/sync-tap.ts",
+    "sync:check": "bun scripts/sync-tap.ts --check",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.3",
+    "typescript": "^7.0.2"
+  }
+}
